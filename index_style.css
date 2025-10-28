@@ -1,64 +1,322 @@
-        html,body { font-family: 'Sarabun', sans-serif; background-color: #121212; color: #ffffff; }
-        .weather-section { background-color: #1e1e1e; border-radius: 16px; padding: 24px; margin-bottom: 20px; position: relative; }
-        .current-temp-display { font-size: 5rem; font-weight: 700; }
-        .circle-gauge { position: relative; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #fff; background: radial-gradient(circle closest-side, #1e1e1e 80%, transparent 81%); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .circle-gauge::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; background: conic-gradient(#ffc107 0% var(--value), #444 var(--value) 100%); transition: background 0.5s ease; }
-        .circle-gauge-pressure::before { background: conic-gradient(#0d6efd 0% var(--value), #444 var(--value) 100%); }
-        .circle-gauge-humidity::before { background: conic-gradient(#198754 0% var(--value), #444 var(--value) 100%); }
-        .circle-gauge-content { position: relative; text-align: center; z-index: 1; }
-        .circle-gauge-content .unit { font-size: 0.7rem; font-weight: normal; display: block; margin-top: -5px; color: rgba(255,255,255,0.7); }
-        .gauge-label { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 8px; text-align: center; }
-        .insert-button { position: absolute; top: 24px; right: 24px; }
-        /* Style สำหรับ Modal */
-        .modal-content { background-color: #2c2c2e; color: #fff; }
-        .form-control[readonly] { background-color: #444; color: #fff; }
-        .weather-section .current-temp-display {
-            color: #0dcaf0;
-            cursor: pointer;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: inline-block; 
-        }
+/* --- Base Styles --- */
+html,
+body {
+    font-family: 'Sarabun', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
 
-        .weather-section .current-temp-display:hover {
-            color: #0d6efd; 
-            transform: scale(1.05); 
-        }
+.weather-section {
+    background-color: #1e1e1e;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+}
 
-        .weather-section .current-temp-display:active {
-            transform: scale(0.98);
-            color: #005de8; 
-        }
+.current-temp-display {
+    font-size: 5rem;
+    font-weight: 700;
+}
 
-        /* ================================== */
-        /* ✨ สไตล์สำหรับ Gemini Feature       */
-        /* ================================== */
+/* --- Circle Gauges --- */
+.circle-gauge {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background: radial-gradient(circle closest-side, #1e1e1e 80%, transparent 81%);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
 
-        /* ปุ่มวงกลม (FAB) */
-        #gemini-fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: #0dcaf0; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1050; transition: transform 0.2s ease-in-out; }
-        #gemini-fab:hover { transform: scale(1.1); }
-        #gemini-popup { position: fixed; bottom: 100px; right: 25px; width: 350px; max-width: 90%; background-color: #2c2c2e; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 1051; overflow: hidden; opacity: 0; transform: translateY(20px); pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease; }
-        #gemini-popup.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        .gemini-popup-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: #3a3a3c; border-bottom: 1px solid #444; }
-        .gemini-popup-header h5 { margin-bottom: 0; font-weight: 500; }
-        #gemini-close-btn { background: none; border: none; color: #fff; font-size: 1.8rem; line-height: 1; cursor: pointer; opacity: 0.7; }
-        #gemini-close-btn:hover { opacity: 1; }
-        .gemini-popup-body { padding: 16px; }
-        #gemini-prompt { background-color: #1e1e1e; color: #fff; border: 1px solid #444; width: 100%; margin-bottom: 12px; border-radius: 8px; }
-        #gemini-prompt::placeholder { color: #888; }
-        #gemini-response-area { margin-top: 16px; padding: 12px; background-color: #1e1e1e; border-radius: 8px; min-height: 50px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; font-size: 0.9rem; }
-        .gemini-popup-body #gemini-response-area {
-            color: #f8f9fa;            /* White-ish text color */
-            background-color: #2c3034;  /* A slightly lighter background to see the box */
-            border-radius: 8px;
-            padding: 15px;
-            width: 90%;         /* Set the general width */
-            max-width: 550px;     /* Set the maximum width */
-            min-width: 300px;     /* Set the minimum width */
-            min-height: 100px;
-            max-height: 50vh;
-            overflow-y: auto;
-            white-space: pre-wrap;      /* This respects line breaks in Gemini's response */
-            transition: all 0.3s ease;
+.circle-gauge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background: conic-gradient(#ffc107 0% var(--value), #444 var(--value) 100%);
+    transition: background 0.5s ease;
+}
 
-        }
-                
+.circle-gauge-pressure::before {
+    background: conic-gradient(#0d6efd 0% var(--value), #444 var(--value) 100%);
+}
+
+.circle-gauge-humidity::before {
+    background: conic-gradient(#198754 0% var(--value), #444 var(--value) 100%);
+}
+
+.circle-gauge-content {
+    position: relative;
+    text-align: center;
+    z-index: 1;
+}
+
+.circle-gauge-content .unit {
+    font-size: 0.7rem;
+    font-weight: normal;
+    display: block;
+    margin-top: -5px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.gauge-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 8px;
+    text-align: center;
+}
+
+/* --- Buttons & Modals --- */
+.insert-button {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+}
+
+.modal-content {
+    background-color: #2c2c2e;
+    color: #fff;
+}
+
+.form-control[readonly] {
+    background-color: #444;
+    color: #fff;
+}
+
+/* --- Hover Effects --- */
+.weather-section .current-temp-display {
+    color: #0dcaf0;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: inline-block;
+}
+
+.weather-section .current-temp-display:hover {
+    color: #0d6efd;
+    transform: scale(1.05);
+}
+
+.weather-section .current-temp-display:active {
+    transform: scale(0.98);
+    color: #005de8;
+}
+
+/* --- Table Footer Style --- */
+tfoot td {
+    font-weight: bold;
+    color: #f8f9fa; /* สีข้อความสว่างขึ้นเล็กน้อย */
+}
+/* ================================== */
+/* ✨ Responsive Table Fix (Card Layout) */
+/* ================================== */
+@media (max-width: 767px) {
+
+    /* 1. ซ่อนหัวตาราง (thead) แบบปกติ */
+    .table-responsive thead { /* ✨ [เพิ่ม tfoot ตรงนี้] ✨ */
+        display: none;
+    }
+
+    /* 2. ทำให้ <tr> ทำตัวเหมือน "การ์ด" */
+    .table-responsive tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #444;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* 3. ทำให้ <td> เรียงกันแนวดิ่ง */
+    .table-responsive td {
+        display: block;
+        width: 100%;
+        position: relative;
+        padding-left: 50%;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-align: right;
+        border: none;
+        border-bottom: 1px solid #3a3a3c;
+    }
+
+    .table-responsive tr td:last-child {
+        border-bottom: none;
+    }
+
+    /* 4. [สำคัญ] ใช้ ::before เพื่อสร้าง Label ด้านซ้าย */
+    .table-responsive td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        font-weight: bold;
+        text-align: left;
+        color: #0dcaf0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* --- Responsive Insert Button --- */
+@media (max-width: 575.98px) {
+    .insert-button {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+}
+
+/* ================================== */
+/* ✨ สไตล์สำหรับ Gemini Feature       */
+/* ================================== */
+
+/* ปุ่มวงกลม (FAB) */
+#gemini-fab {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: #0dcaf0;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1050;
+    transition: transform 0.2s ease-in-out;
+}
+
+#gemini-fab:hover {
+    transform: scale(1.1);
+}
+
+/* Gemini Popup Window */
+#gemini-popup {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 350px;
+    max-width: 90%;
+    background-color: #2c2c2e;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1051;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#gemini-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.gemini-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #3a3a3c;
+    border-bottom: 1px solid #444;
+}
+
+.gemini-popup-header h5 {
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+#gemini-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+#gemini-close-btn:hover {
+    opacity: 1;
+}
+
+.gemini-popup-body {
+    padding: 16px;
+}
+
+#gemini-prompt {
+    background-color: #1e1e1e;
+    color: #fff;
+    border: 1px solid #444;
+    width: 100%;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+#gemini-prompt::placeholder {
+    color: #888;
+}
+
+#gemini-response-area {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    min-height: 50px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+}
+
+.gemini-popup-body #gemini-response-area {
+    color: #f8f9fa;
+    background-color: #2c3034;
+    border-radius: 8px;
+    padding: 15px;
+    width: 90%;
+    max-width: 550px;
+    min-width: 300px;
+    min-height: 100px;
+    max-height: 50vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    transition: all 0.3s ease;
+}
+
+/* ✨ [เพิ่ม] ลบเส้นขอบของ Status Modal Footer */
+#statusModal .modal-footer {
+    border-top: none !important;
+}
+
+/* ✨ [เพิ่ม] ทำให้ Placeholder ของช่อง Search เป็นสีขาว */
+#searchInput::placeholder {
+  color: #fff; 
+  opacity: 1; /* บังคับให้แสดงสีเต็ม (ไม่โปร่งแสง) */
+}
+
+/* (สำหรับเบราว์เซอร์ Firefox ที่อาจจะยังจาง) */
+#searchInput::-moz-placeholder {
+  color: #fff;
+  opacity: 1;
+}
